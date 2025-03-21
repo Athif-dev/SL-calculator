@@ -62,54 +62,59 @@ export default function StopLossCalculator() {
           <h2 className="text-3xl font-bold text-white text-center mb-6">
             SL Calculator
           </h2>
-
-          {/* Entry Price */}
-          <div className="mb-4">
-            <label className="block text-gray-300 font-medium mb-1">
-              Entry Price
-            </label>
-            <input
-              type="number"
-              value={entryPrice}
-              onChange={(e) => setEntryPrice(e.target.value)}
-              className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
-            />
-          </div>
-
-          {/* Quantity */}
-          <div className="mb-4">
-            <label className="block text-gray-300 font-medium mb-1">
-              Quantity
-            </label>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
-            />
-          </div>
-
-          {/* Max Loss */}
-          <div className="mb-4">
-            <label className="block text-gray-300 font-medium mb-1">
-              Max Loss (₹)
-            </label>
-            <input
-              type="number"
-              value={maxLoss}
-              onChange={(e) => setMaxLoss(e.target.value)}
-              className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
-            />
-          </div>
-
-          {/* Calculate Button */}
-          <button
-            onClick={calculateCharges}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition-all duration-300"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); 
+              calculateCharges();
+            }}
           >
-            Calculate
-          </button>
+            {/* Entry Price */}
+            <div className="mb-4">
+              <label className="block text-gray-300 font-medium mb-1">
+                Entry Price
+              </label>
+              <input
+                type="number"
+                value={entryPrice}
+                onChange={(e) => setEntryPrice(e.target.value)}
+                className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
+              />
+            </div>
 
+            {/* Quantity */}
+            <div className="mb-4">
+              <label className="block text-gray-300 font-medium mb-1">
+                Quantity
+              </label>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
+              />
+            </div>
+
+            {/* Max Loss */}
+            <div className="mb-4">
+              <label className="block text-gray-300 font-medium mb-1">
+                Max Loss (₹) <br></br>{" "}
+                <span className="text-xs font-normal italic">
+                  Including all brokerage & taxes
+                </span>
+              </label>
+              <input
+                type="number"
+                value={maxLoss}
+                onChange={(e) => setMaxLoss(e.target.value)}
+                className="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg"
+              />
+            </div>
+
+            {/* Calculate Button */}
+            <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition-all duration-300">
+              Calculate
+            </button>
+          </form>
           {stopLoss && charges && (
             <div className="mt-6 p-4 bg-gray-900 text-center rounded-lg border border-gray-700">
               {/* Stop-Loss Price */}
