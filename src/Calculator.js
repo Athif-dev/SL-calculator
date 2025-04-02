@@ -4,6 +4,7 @@ export default function StopLossCalculator() {
   const [entryPrice, setEntryPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [maxLoss, setMaxLoss] = useState("");
+  const [tradeType, setTradeType] = useState("buy"); // New state for Buy/Sell toggle
   const [stopLoss, setStopLoss] = useState(null);
   const [charges, setCharges] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -16,7 +17,10 @@ export default function StopLossCalculator() {
     const maxLossValue = parseFloat(maxLoss);
 
     // **Stop-Loss Calculation**
-    const stopLossPrice = entry - maxLossValue / qty;
+    const stopLossPrice =
+      tradeType === "buy"
+        ? entry - maxLossValue / qty
+        : entry + maxLossValue / qty;
 
     // **Turnover Calculation**
     const turnover = entry * qty + stopLossPrice * qty;
@@ -24,8 +28,9 @@ export default function StopLossCalculator() {
     // **Brokerage (Lower of ₹20 or 0.03% of Turnover)**
     const brokerage = Math.min(20, (0.03 / 100) * turnover);
 
-    // **STT (Only on Sell-Side)**
-    const stt = (0.025 / 100) * (stopLossPrice * qty);
+    // **STT (Only on Sell-Side for Intraday)**
+    const stt =
+      tradeType === "sell" ? (0.025 / 100) * (stopLossPrice * qty) : 0;
 
     // **Transaction Charges (NSE)**
     const txnCharges = (0.00325 / 100) * turnover;
@@ -34,7 +39,7 @@ export default function StopLossCalculator() {
     const gst = (18 / 100) * (brokerage + txnCharges);
 
     // **Stamp Duty (Only on Buy-Side)**
-    const stampDuty = (0.003 / 100) * (entry * qty);
+    const stampDuty = tradeType === "buy" ? (0.003 / 100) * (entry * qty) : 0;
 
     // **SEBI Turnover Fees**
     const sebiCharges = (0.0001 / 100) * turnover;
@@ -64,10 +69,37 @@ export default function StopLossCalculator() {
           </h2>
           <form
             onSubmit={(e) => {
-              e.preventDefault(); 
+              e.preventDefault();
               calculateCharges();
             }}
           >
+            {/* Trade Type Toggle */}
+            {/* Trade Type Toggle */}
+            <div className="mb-4 flex items-center bg-gray-900 p-1 rounded-full">
+              <button
+                type="button"
+                className={`w-1/2 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
+                  tradeType === "buy"
+                    ? "bg-green-500 text-white shadow-md"
+                    : "text-gray-300 hover:bg-gray-800"
+                }`}
+                onClick={() => setTradeType("buy")}
+              >
+                Buy
+              </button>
+              <button
+                type="button"
+                className={`w-1/2 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
+                  tradeType === "sell"
+                    ? "bg-red-500 text-white shadow-md"
+                    : "text-gray-300 hover:bg-gray-800"
+                }`}
+                onClick={() => setTradeType("sell")}
+              >
+                Sell
+              </button>
+            </div>
+
             {/* Entry Price */}
             <div className="mb-4">
               <label className="block text-gray-300 font-medium mb-1">
@@ -97,10 +129,7 @@ export default function StopLossCalculator() {
             {/* Max Loss */}
             <div className="mb-4">
               <label className="block text-gray-300 font-medium mb-1">
-                Max Loss (₹) <br></br>{" "}
-                <span className="text-xs font-normal italic">
-                  Including all brokerage & taxes
-                </span>
+                Max Loss (₹)
               </label>
               <input
                 type="number"
@@ -117,29 +146,21 @@ export default function StopLossCalculator() {
           </form>
           {stopLoss && charges && (
             <div className="mt-6 p-4 bg-gray-900 text-center rounded-lg border border-gray-700">
-              {/* Stop-Loss Price */}
               <p className="text-xl font-bold text-green-500">
                 Stop-Loss Price: ₹{stopLoss}
               </p>
-
               <hr className="my-2 border-gray-700" />
-
-              {/* Total Charges */}
               <p className="text-lg font-bold text-red-400">
                 Total Charges: ₹{charges.total}
               </p>
-
-              {/* Toggle Button */}
               <button
                 onClick={() => setShowDetails(!showDetails)}
-                className="mt-3 text-blue-400 underline focus:outline-none"
+                className="mt-3 text-blue-400 underline"
               >
                 {showDetails ? "Hide Details" : "View Details"}
               </button>
-
-              {/* Dropdown Details */}
               {showDetails && (
-                <div className="mt-3 p-3 bg-gray-800 rounded-lg transition-all duration-300">
+                <div className="mt-3 p-3 bg-gray-800 rounded-lg">
                   <p className="text-gray-400">
                     Brokerage: ₹{charges.brokerage}
                   </p>
